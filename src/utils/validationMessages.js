@@ -31,6 +31,17 @@ export const validationMessages = {
   description: {
     "string.empty": "Description cannot be empty",
     "string.max": "Description cannot exceed 300 characters",
+    "string.min":"Description cannot be les than 5 characters"
   },
+  status:{
+    "string.base": "Status must be a string",
+    "any.only": "Status must be either pending, completed, or deleted"
+  },
+    user: {
+    "any.required": "User is required",
+    "string.base": "User ID must be a string",
+    "string.length": "Invalid user ID",
+    "string.hex": "Invalid user ID format",
+  }
 };
 

@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 
 export const userModel = new mongoose.Schema({
 
-    namr:{
+    name:{
         type:String,
         required:true,
         trim:true
