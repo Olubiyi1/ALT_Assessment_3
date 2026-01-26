@@ -9,4 +9,4 @@ class TaskValidationSchema{
         user:Joi.string().length(24).hex().required().messages(validationMessages.user)
     })
 }
-export default TaskValidationSchema
+export default TaskValidationSchema;
