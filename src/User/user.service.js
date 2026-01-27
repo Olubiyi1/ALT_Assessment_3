@@ -1,57 +1,43 @@
-import Guards from "../guards/guards";
-import userModel from "./user.model";
+import Guards from "../guards/guards.js";
+import {userModel} from "./user.model.js";
+import AppError from "../errorHandler/AppError.js";
 
 class UserService {
 
-  static registerUser = async (data) => {
-    try {
-      const { email, password } = data;
+  static registerUser = async ({ email, password }) => {
+    const existingUser = await userModel.findOne({ email });
 
-      const existingUser = await userModel.findOne({ email });
-      if (existingUser) {
-        throw new Error("User already exists");
-      }
+    if (existingUser) throw new AppError("User already exists", 400);
 
-      const hashedPassword = await Guards.hashPassword(password);
+    const hashedPassword = await Guards.hashPassword(password);
 
-      const user = await userModel.create({
-        email,
-        password: hashedPassword
-      });
+    const user = await userModel.create({
+      email,
+      password: hashedPassword,
+    });
 
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    return {
+      id:user._id,
+      email:user.email,
+      createdAt:user.createdAt
+    };
   };
 
-  static userLogin = async (data) => {
-    try {
-      const { email, password } = data;
+  static userLogin = async ({ email, password }) => {
+    const user = await userModel.findOne({ email });
 
-      const user = await userModel.findOne({ email });
-      if (!user) {
-        throw new Error("Invalid email or password");
-      }
+    if (!user) throw new AppError("Invalid email or password", 401);
 
-      const isPasswordValid = await Guards.comparePassword(
-        password,
-        user.password
-      );
+    const isPasswordValid = await Guards.comparePassword(
+      password,
+      user.password
+    );
 
-      if (!isPasswordValid) {
-        throw new Error("Invalid email or password");
-      }
+    if (!isPasswordValid) throw new AppError("Invalid email or password", 401);
 
-      const token = Guards.createJwt(user);
+    const token = Guards.createJwt(user);
 
-      return {
-        token,
-        email: user.email
-      };
-    } catch (error) {
-      throw error;
-    }
+    return { token, email: user.email };
   };
 }
 

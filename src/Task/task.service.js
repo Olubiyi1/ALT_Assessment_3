@@ -1,65 +1,62 @@
-import Task from "./task.model";
+import Task from "./task.model.js";
+import AppError from "../errorHandler/AppError.js";
 
 class TaskService {
 
-  // task creation
+  // Task creation
   static createTask = async (data, userId) => {
-    try {
-      const { title, description } = data;
+    const { title, description } = data;
 
-      const task = await Task.create({
-        title,
-        description,
-        user: userId
-      });
-
-      return task;
-    } catch (error) {
-      throw error;
+    if (!title || !description) {
+      throw new AppError("Title and description are required", 400);
     }
+
+    const task = await Task.create({
+      title,
+      description,
+      user: userId,
+      status: "active", // optional default
+    });
+
+    return task;
   };
 
-  // get all task for a single user
+  // Get all tasks for a single user
   static getUserTasks = async (userId, status = null) => {
-    try {
-      const query = { user: userId };
+    const query = { user: userId };
+    if (status) query.status = status;
 
-      if (status) {
-        query.status = status;
-      }
-
-      return await Task.find(query).sort({ createdAt: -1 });
-    } catch (error) {
-      throw error;
-    }
+    return await Task.find(query).sort({ createdAt: -1 });
   };
 
-  // update task status
+  // Update task status
   static updateTaskStatus = async (taskId, userId, status) => {
-    try {
-      const task = await Task.findOneAndUpdate(
-        { _id: taskId, user: userId },
-        { status },
-        { new: true }
-      );
+    const task = await Task.findOneAndUpdate(
+      { _id: taskId, user: userId },
+      { status },
+      { new: true }
+    );
 
-      if (!task) {
-        throw new Error("Task not found or unauthorized");
-      }
-
-      return task;
-    } catch (error) {
-      throw error;
+    if (!task) {
+      throw new AppError("Task not found or unauthorized", 404);
     }
+
+    return task;
   };
 
-  // soft delete for task
+  // Soft delete for task
   static deleteTask = async (taskId, userId) => {
-    try {
-      return await this.updateTaskStatus(taskId, userId, "deleted");
-    } catch (error) {
-      throw error;
+    const task = await Task.findOneAndUpdate(
+      { _id: taskId, user: userId },
+      { status: "deleted" },
+      { new: true }
+    );
+
+    if (!task) {
+      throw new AppError("Task not found or unauthorized", 404);
     }
+
+    return task;
   };
 }
 

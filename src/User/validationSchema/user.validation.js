@@ -1,5 +1,5 @@
 import Joi from "joi";
-import validationMessages from "../../utils/validationMessages";
+import {validationMessages} from "../../utils/validationMessages.js";
 
 class UserValidationSchema {
   static createUserValidation = Joi.object({
