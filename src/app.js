@@ -30,9 +30,9 @@ app.use(session({
 app.use("/api/users",userRoute)
 app.use("/api/tasks",taskRoute)
 app.get("/", (req, res) => {
-  res.render("index", { user: req.session.user });
+  const name = req.session.user?.email || "Guest";
+  res.render("index", { name });
 });
-
 
 app.use(notFoundHandler)
 app.use(globalErrorHandler)
