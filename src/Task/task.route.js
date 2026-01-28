@@ -2,7 +2,7 @@ import express from "express";
 import { validate } from "../middlewares/validationMiddleware.js";
 import TaskController from "./task.controller.js";
 import TaskValidationSchema from "./task.validationSchema.js";
-import { isAuthenticated } from "../middlewares/authMiddleware.js";
+import { isAuthenticated } from "../middlewares/auth.middleware.js";
 
 const taskRoute = express.Router();
 
