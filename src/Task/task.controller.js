@@ -2,6 +2,13 @@ import TaskService from "./task.service.js";
 import ResponseHandler from "../utils/responseHandler.js";
 
 class TaskController {
+
+    // EJS helper: only return task array
+  static getTasksData = async (userId) => {
+    const tasks = await TaskService.getUserTasks(userId);
+    return tasks;
+  };
+  
   static createTask = async (req, res, next) => {
     try {
       const userId = req.session?.user?.id || req.user?.id;

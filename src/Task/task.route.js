@@ -6,30 +6,31 @@ import { isAuthenticated } from "../middlewares/auth.middleware.js";
 
 const taskRoute = express.Router();
 
-//all tasks page
+// All tasks page (EJS)
 taskRoute.get("/tasks-page", isAuthenticated, async (req, res, next) => {
   try {
     const userId = req.session.user.id;
-    const tasks = await TaskController.getTasks(req, res); 
-    res.render("tasks/tasks", { tasks });
+    // Get tasks directly from the service
+    const tasks = await TaskController.getTasksData(userId); 
+    res.render("tasks/tasks", { tasks }); // render EJS page
   } catch (err) {
     next(err);
   }
 });
 
-//create task form
+// Create task form page (EJS)
 taskRoute.get("/create-task-page", isAuthenticated, (req, res) => {
   res.render("tasks/create-task");
 });
 
-// Create task
+// Create task (API or EJS form)
 taskRoute.post(
   "/create-task",
   validate(TaskValidationSchema.createTaskValidationSchema),
   TaskController.createTask
 );
 
-// Get tasks
+// Get tasks (API)
 taskRoute.get("/tasks", TaskController.getTasks);
 
 // Update task status
