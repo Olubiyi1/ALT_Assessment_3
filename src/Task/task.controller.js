@@ -2,21 +2,36 @@ import TaskService from "./task.service.js";
 import ResponseHandler from "../utils/responseHandler.js";
 
 class TaskController {
-  // Create task
   static createTask = async (req, res, next) => {
     try {
-      const task = await TaskService.createTask(req.body, req.user.id);
+      const userId = req.session?.user?.id || req.user?.id;
+      const task = await TaskService.createTask(req.body, userId);
+
+      // EJS form request
+      if (req.headers.accept?.includes("text/html")) {
+        return res.redirect("/task/tasks-page");
+      }
+
+      // API response
       return ResponseHandler.ok(res, "Task created successfully", task);
     } catch (error) {
       next(error);
     }
   };
 
-  // Get tasks (optionally filtered by status)
+  // Get tasks
   static getTasks = async (req, res, next) => {
     try {
+      const userId = req.session?.user?.id || req.user?.id;
       const { status } = req.query;
-      const tasks = await TaskService.getUserTasks(req.user.id, status);
+      const tasks = await TaskService.getUserTasks(userId, status);
+
+      // EJS page
+      if (req.headers.accept?.includes("text/html")) {
+        return res.render("tasks/tasks", { tasks });
+      }
+
+      // API response
       return ResponseHandler.ok(res, "Tasks fetched successfully", tasks);
     } catch (error) {
       next(error);
@@ -26,29 +41,34 @@ class TaskController {
   // Update task status
   static updateTaskStatus = async (req, res, next) => {
     try {
-      const { id } = req.params; 
-      const { status } = req.body; 
+      const userId = req.session?.user?.id || req.user?.id;
+      const { id } = req.params;
+      const { status } = req.body;
 
       if (!["pending", "completed", "deleted"].includes(status)) {
         return ResponseHandler.badRequest(res, "Invalid status value");
       }
 
-      const task = await TaskService.updateTaskStatus(id, req.user.id, status);
+      const task = await TaskService.updateTaskStatus(id, userId, status);
+
       return ResponseHandler.ok(res, "Task status updated", task);
     } catch (error) {
-      next(error); 
+      next(error);
     }
   };
 
   // Soft delete task
   static deleteTask = async (req, res, next) => {
     try {
+      const userId = req.session?.user?.id || req.user?.id;
       const { id } = req.params;
-      const task = await TaskService.deleteTask(id, req.user.id);
+      const task = await TaskService.deleteTask(id, userId);
+
       return ResponseHandler.ok(res, "Task deleted successfully", task);
     } catch (error) {
-      next(error); 
+      next(error);
     }
   };
 }
+
 export default TaskController;

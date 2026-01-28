@@ -1,44 +1,47 @@
-import Guards from "../guards/guards.js";
-import {userModel} from "./user.model.js";
+import UserService from "./user.service.js";
 import AppError from "../errorHandler/AppError.js";
 
-class UserService {
+class UserController {
 
-  static registerUser = async ({ email, password }) => {
-    const existingUser = await userModel.findOne({ email });
+  // Register user
+  static registerUser = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const user = await UserService.registerUser({ email, password });
 
-    if (existingUser) throw new AppError("User already exists", 400);
+      // Set session for EJS
+      req.session.user = {
+        id: user.id,
+        email: user.email
+      };
 
-    const hashedPassword = await Guards.hashPassword(password);
+      // Redirect to tasks page
+      res.redirect("/task/tasks-page");
 
-    const user = await userModel.create({
-      email,
-      password: hashedPassword,
-    });
-
-    return {
-      id:user._id,
-      email:user.email,
-      createdAt:user.createdAt
-    };
+    } catch (err) {
+      next(err);
+    }
   };
 
-  static userLogin = async ({ email, password }) => {
-    const user = await userModel.findOne({ email });
+  // Login user
+  static loginUser = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const { email: userEmail } = await UserService.userLogin({ email, password });
 
-    if (!user) throw new AppError("Invalid email or password", 401);
+      // Set session for EJS
+      req.session.user = {
+        id: req.userId, 
+        email: userEmail
+      };
 
-    const isPasswordValid = await Guards.comparePassword(
-      password,
-      user.password
-    );
+      // Redirect to tasks page
+      res.redirect("/task/tasks-page");
 
-    if (!isPasswordValid) throw new AppError("Invalid email or password", 401);
-
-    const token = Guards.createJwt(user);
-
-    return { token, email: user.email };
+    } catch (err) {
+      next(err);
+    }
   };
 }
 
-export default UserService;
+export default UserController;

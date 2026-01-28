@@ -1,63 +1,72 @@
-import Task from "./task.model.js";
-import AppError from "../errorHandler/AppError.js";
+import TaskService from "./task.service.js";
+import ResponseHandler from "../utils/responseHandler.js";
 
-class TaskService {
+class TaskController {
 
-  // Task creation
-  static createTask = async (data, userId) => {
-    const { title, description } = data;
+  // Create task
+  static createTask = async (req, res, next) => {
+    try {
+      const userId = req.session?.user?.id; // for EJS
+      const task = await TaskService.createTask(req.body, userId);
 
-    if (!title || !description) {
-      throw new AppError("Title and description are required", 400);
+      // EJS form request
+      if (req.headers.accept?.includes("text/html")) {
+        return res.redirect("/task/tasks-page");
+      }
+
+      // API response
+      return ResponseHandler.success(res, "Task created successfully", task);
+
+    } catch (error) {
+      next(error);
     }
-
-    const task = await Task.create({
-      title,
-      description,
-      user: userId,
-      status: "active", // optional default
-    });
-
-    return task;
   };
 
-  // Get all tasks for a single user
-  static getUserTasks = async (userId, status = null) => {
-    const query = { user: userId };
-    if (status) query.status = status;
+  // Get tasks
+  static getTasks = async (req, res, next) => {
+    try {
+      const userId = req.session?.user?.id || req.user?.id; // EJS or API
+      const tasks = await TaskService.getUserTasks(userId);
 
-    return await Task.find(query).sort({ createdAt: -1 });
+      // EJS page
+      if (req.headers.accept?.includes("text/html")) {
+        return res.render("tasks/tasks", { tasks });
+      }
+
+      // API response
+      return ResponseHandler.success(res, "Tasks fetched successfully", tasks);
+
+    } catch (error) {
+      next(error);
+    }
   };
 
   // Update task status
-  static updateTaskStatus = async (taskId, userId, status) => {
-    const task = await Task.findOneAndUpdate(
-      { _id: taskId, user: userId },
-      { status },
-      { new: true }
-    );
+  static updateTaskStatus = async (req, res, next) => {
+    try {
+      const userId = req.session?.user?.id || req.user?.id;
+      const { status } = req.body;
+      const task = await TaskService.updateTaskStatus(req.params.id, userId, status);
 
-    if (!task) {
-      throw new AppError("Task not found or unauthorized", 404);
+      return ResponseHandler.success(res, "Task updated successfully", task);
+
+    } catch (error) {
+      next(error);
     }
-
-    return task;
   };
 
-  // Soft delete for task
-  static deleteTask = async (taskId, userId) => {
-    const task = await Task.findOneAndUpdate(
-      { _id: taskId, user: userId },
-      { status: "deleted" },
-      { new: true }
-    );
+  // Delete task
+  static deleteTask = async (req, res, next) => {
+    try {
+      const userId = req.session?.user?.id || req.user?.id;
+      const task = await TaskService.deleteTask(req.params.id, userId);
 
-    if (!task) {
-      throw new AppError("Task not found or unauthorized", 404);
+      return ResponseHandler.success(res, "Task deleted successfully", task);
+
+    } catch (error) {
+      next(error);
     }
-
-    return task;
   };
 }
 
-export default TaskService;
+export default TaskController;
