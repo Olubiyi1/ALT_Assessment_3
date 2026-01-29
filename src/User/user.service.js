@@ -25,12 +25,6 @@ class UserService {
     const isPasswordValid = await Guards.comparePassword(password, user.password);
     if (!isPasswordValid) throw new AppError("Invalid email or password", 401);
 
-
-     req.session.user = {
-        id: user._id,
-        email: user.email
-    };
-
     return {
       id: user._id,
       email: user.email,
