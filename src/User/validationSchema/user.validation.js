@@ -3,12 +3,6 @@ import {validationMessages} from "../../utils/validationMessages.js";
 
 class UserValidationSchema {
   static createUserValidation = Joi.object({
-    name: Joi.string()
-      .trim()
-      .min(3)
-      .max(50)
-      .required()
-      .messages(validationMessages.name),
 
     email: Joi.string()
       .trim()
