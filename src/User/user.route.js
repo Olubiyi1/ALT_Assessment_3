@@ -6,13 +6,13 @@ import { validate } from "../middlewares/validationMiddleware.js";
 const userRoute = express.Router();
 
 // register form
-userRoute.get("/register-page", (req, res) => {
-  res.render("auth/register");
+userRoute.get("/register", (req, res) => {
+  res.render("register");
 });
 
 // login form
-userRoute.get("/login-page", (req, res) => {
-  res.render("auth/login");
+userRoute.get("/login", (req, res) => {
+  res.render("login");
 });
 
 // Logout

@@ -7,7 +7,7 @@ import { isAuthenticated } from "../middlewares/auth.middleware.js";
 const taskRoute = express.Router();
 
 // All tasks page (EJS)
-taskRoute.get("/tasks-page", isAuthenticated, async (req, res, next) => {
+taskRoute.get("/tasks", isAuthenticated, async (req, res, next) => {
   try {
     const userId = req.session.user.id;
     // Get tasks directly from the service
@@ -19,7 +19,7 @@ taskRoute.get("/tasks-page", isAuthenticated, async (req, res, next) => {
 });
 
 // Create task form page (EJS)
-taskRoute.get("/create-task-page", isAuthenticated, (req, res) => {
+taskRoute.get("/createTask", isAuthenticated, (req, res) => {
   res.render("tasks/create-task");
 });
 
