@@ -25,11 +25,15 @@ class UserService {
     const isPasswordValid = await Guards.comparePassword(password, user.password);
     if (!isPasswordValid) throw new AppError("Invalid email or password", 401);
 
-    const token = Guards.createJwt(user); // optional for API
+
+     req.session.user = {
+        id: user._id,
+        email: user.email
+    };
+
     return {
       id: user._id,
       email: user.email,
-      token
     };
   };
 }
