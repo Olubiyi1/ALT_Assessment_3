@@ -1,6 +1,6 @@
 import Guards from "../guards/guards.js";
 import userModel from "../User/user.model.js"
-import AppError from "../errorHandler/AppError.js"
+import AppError from "../errorHandler/AppError.js";
 
 class UserService {
 
