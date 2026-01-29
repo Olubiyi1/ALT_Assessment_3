@@ -10,7 +10,7 @@ class UserController {
       // If request came from EJS form (not JSON), set session and redirect
       if (req.headers.accept?.includes("text/html")) {
         req.session.user = { id: user.id, email: user.email };
-        return res.redirect("/api/tasks");
+        return res.redirect("/api/tasks/task-page");
       }
 
       // Else, API response
