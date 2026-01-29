@@ -11,7 +11,7 @@ class TaskController {
     console.log("Form data:", req.body);   
       const userId = req.session.user.id;
       await TaskService.createTask(req.body, userId);
-      return res.redirect("/task/tasks-page");
+      return res.redirect("/api/task/tasks-page");
     } catch (err) {
       next(err);
     }
