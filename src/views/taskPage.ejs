@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Page</title>
+</head>
+<body>
+
+<h1>Welcome, <%= user.email %></h1>
+
+<h2>Create Task</h2>
+<form method="POST" action="/task">
+  <input type="text" name="title" placeholder="Title" required /><br/>
+  <textarea name="description" placeholder="Description" required></textarea><br/>
+  <button type="submit">Add Task</button>
+</form>
+
+<h2>Your Tasks</h2>
+<% if (tasks.length === 0) { %>
+  <p>No tasks yet.</p>
+<% } else { %>
+  <ul>
+    <% tasks.forEach(task => { %>
+      <li>
+        <strong><%= task.title %></strong> - <%= task.description %> - <%= task.status %>
+
+        <!-- Update status form -->
+        <% if (task.status !== 'completed') { %>
+          <form style="display:inline" method="POST" action="/task/update">
+            <input type="hidden" name="id" value="<%= task._id %>"/>
+            <input type="hidden" name="status" value="completed"/>
+            <button type="submit">Mark Completed</button>
+          </form>
+        <% } %>
+
+        <!-- Delete task form -->
+        <form style="display:inline" method="POST" action="/task/delete">
+          <input type="hidden" name="id" value="<%= task._id %>"/>
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<a href="/user/logout">Logout</a>
+</body>
+</html>
