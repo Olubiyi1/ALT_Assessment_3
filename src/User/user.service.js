@@ -1,5 +1,5 @@
 import Guards from "../guards/guards.js";
-import { userModel } from "./user.model.js";
+import userModel  from "./user.model.js";
 import AppError from "../errorHandler/AppError.js"
 
 class UserService {
