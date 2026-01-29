@@ -7,6 +7,8 @@ class TaskController {
 
   static createTask = async (req, res, next) => {
     try {
+      console.log("Session user:", req.session.user); // is it defined?
+    console.log("Form data:", req.body);   
       const userId = req.session.user.id;
       await TaskService.createTask(req.body, userId);
       return res.redirect("/task/tasks-page");
