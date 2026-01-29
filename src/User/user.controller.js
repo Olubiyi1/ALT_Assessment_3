@@ -33,7 +33,7 @@ class UserController {
         };
       // If request came from EJS form
       if (req.headers.accept?.includes("text/html")) {
-        return res.redirect("/task/tasks-page");
+        return res.redirect("api/tasks/tasks-page");
       }
 
       // Else, API response
