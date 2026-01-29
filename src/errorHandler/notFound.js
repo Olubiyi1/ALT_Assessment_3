@@ -1,4 +1,4 @@
-import AppError from "./AppError";
+import AppError from "./AppError.js";
 
 export const notFoundHandler = (req, res, next) => {
   const err = new AppError(`Can't find ${req.originalUrl}`, 404);
