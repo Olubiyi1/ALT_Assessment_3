@@ -12,7 +12,7 @@ class TaskService {
 
   static getUserTasks = async (userId) => {
     if (!userId) throw new AppError("Unauthorized", 401);
-    return await Task.find({ user: userId }).sort({ createdAt: -1 });a
+    return await Task.find({ user: userId }).sort({ createdAt: -1 });
   };
 
   static updateTaskStatus = async (taskId, userId, status) => {
