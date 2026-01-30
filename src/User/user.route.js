@@ -35,5 +35,15 @@ userRoute.post(
   validate(UserValidationSchema.userLoginValidation),
   UserController.loginUser
 );
-
+userRoute.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.redirect("/");
+    }
+    // Clear session cookie
+    res.clearCookie("connect.sid"); 
+    // Redirect to login page
+    res.redirect("/login"); 
+  });
+})
 export default userRoute;
